@@ -280,11 +280,7 @@ public class XYZBank {
                                 System.err.println(e.getMessage());//if any input is wrong, it will throw an error
                             }
                             processLoan(in, menuOption, recordID, thouAmount, interest, duration, cust, totalRecords);
-
-
                         }
-
-
                     }
                     break;
                 case 4:
