@@ -22,12 +22,12 @@ public class Customer implements CheckerPrinter {
         return custID;
     }
 
-    public double getCustIncome() {
-        return custIncome;
-    }
-
     public void setCustID(String custID) {
         this.custID = custID;
+    }
+
+    public double getCustIncome() {
+        return custIncome;
     }
 
     public void setCustIncome(double custIncome) {
@@ -35,10 +35,10 @@ public class Customer implements CheckerPrinter {
     }
 
 
-    public String yesNo(boolean b){
-        if(b){
+    public String yesNo(boolean b) {
+        if (b) {
             return "Yes";
-        }else{
+        } else {
             return "No";
         }
     }
@@ -52,12 +52,12 @@ public class Customer implements CheckerPrinter {
     @Override
     public boolean eligible(double amount) {
         int amount_ = 0;
-        if(loanRecs.isEmpty()){
-            eligible = (amount*1000) < (custIncome * 4);
+        if (loanRecs.isEmpty()) {
+            eligible = (amount * 1000) < (custIncome * 4);
             return eligible;
         }
-        for(Loan loan : loanRecs){
-            amount_ += loan.thouAmount*1000;
+        for (Loan loan : loanRecs) {
+            amount_ += loan.thouAmount * 1000;
         }
         eligible = amount_ < (custIncome * 4);
         return eligible;
@@ -68,7 +68,7 @@ public class Customer implements CheckerPrinter {
 
         System.out.println("Customer ID: " + custID + "\nEligible to arrange new loans: " + yesNo(eligible) + "\n");
         System.out.printf(" %-8s  %-8s  %-8s  %-8s  %-8s%n", "RECORDID", "TYPE OF LOAN", "INTEREST", "AMOUNT LEFT", "YEARS LEFT"); //sets up a table
-        for(Loan loan : loanRecs){
+        for (Loan loan : loanRecs) {
             System.out.println(loan.toString());
         }
 
@@ -84,10 +84,10 @@ public class Customer implements CheckerPrinter {
 
 
     public Loan getLoan(String recordID) {
-            for(Loan loan : loanRecs) {
-                if(loan.getRecordID().equals(recordID)) {
-                    return loan;
-                }
+        for (Loan loan : loanRecs) {
+            if (loan.getRecordID().equals(recordID)) {
+                return loan;
+            }
         }
         return null;
     }

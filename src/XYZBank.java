@@ -64,10 +64,9 @@ public class XYZBank {
             System.out.println("What customer ID do you want to add a record for or type None to exit"); //asks the user which customer they want to add a record for
             query = in.nextLine();
 
-            if(query.equals("None")){ //if the user types "None", exit the program
+            if (query.equals("None")) { //if the user types "None", exit the program
                 break;
-            }
-            else if (!customerIds.containsKey(query)) {
+            } else if (!customerIds.containsKey(query)) {
                 System.err.println("Invalid Customer ID, try again.");//if the customer ID is not in the correct format, or it is not in the map, it will throw an error
                 i--;
                 continue;
@@ -95,7 +94,7 @@ public class XYZBank {
                 try {
                     processLoan(in, menuOption, recordID, thouAmount, interest, duration, cust, totalRecords);//processes the loan - more detail in the actual function.
                     totalRecords++;
-                }catch(Exception e){
+                } catch (Exception e) {
                     System.err.println(e.getMessage());
                     i--;
                 }
@@ -210,31 +209,31 @@ public class XYZBank {
 
                         Customer tempCust = customerIds.get(custID); //gets the customer from the customer ID
 
-                        do{
+                        do {
                             System.out.println("Enter the Record ID"); //the user inputs the record ID
                             recordID = in.nextLine();
-                            if(usedRecords.contains(recordID)){ //checks if the record ID is in the set
+                            if (usedRecords.contains(recordID)) { //checks if the record ID is in the set
                                 tempCust.remove(tempCust.getLoan(recordID)); //if it is, it will remove it from the customer
                                 totalRecords--;//decreases the total records by 1
                                 break;
-                            }else System.out.println("Invalid Record ID"); //otherwise, it will throw an error
+                            } else System.out.println("Invalid Record ID"); //otherwise, it will throw an error
 
-                        }while(true);
+                        } while (true);
                         break;
                     }
                     break;
                 case 3:
                     while (true) {
-                        if (amountOfRecords == totalRecords) {
-                            System.out.println("Maximum number of records reached");
+                        if (amountOfRecords == totalRecords) { //if the amount of records is equal to the total records...
+                            System.out.println("Maximum number of records reached"); //...it will throw an error
                             break;
                         }
                         boolean decision = true;
                         if (customerArray.size() != amount || decision)  //if the amount of customers is not equal to the amount of customers in the array or if the user wants to create a new customer
                             System.out.println("Would you like to create a new customer? (True/False)");
-                        decision = in.nextBoolean();
+                        decision = in.nextBoolean();//asks if the user wants to create a new customer
                         in.nextLine();
-                        if (decision) {
+                        if (decision) { //creates a new customer if decision is true
                             System.out.println("Enter the CustomerID");
                             String custID = in.nextLine();
                             if (!custID.matches(regex)) {
@@ -249,49 +248,36 @@ public class XYZBank {
                                 continue;
                             }
                             Customer newCust = new Customer(custID, custIncome);
-                            customerIds.put(custID, newCust);
-                            customerArray.add(newCust);
-                            amount++;
+                            customerIds.put(custID, newCust);//adds the new customer to the map
+                            customerArray.add(newCust);//adds the new customer to the array
+                            amount++;//increases the amount of customers by 1
                         }
                         System.out.println("Which customer would you like to add a loan to?");
-                        String custID = in.nextLine();
+                        String custID = in.nextLine();//asks which customer the user wants to add a loan to
 
                         if (!custID.matches(regex)) {
                             System.err.println("Invalid CustomerID");
                             continue;
                         }
-                        Customer cust = customerIds.get(custID);
+                        Customer cust = customerIds.get(custID); //gets the customer from the customer ID
 
                         while (true) {
-
-
                             try {
                                 System.out.println("1. Personal Loan\n2. Builder Loan\n3. Auto Loan\n4. Mortgage Loan\n5. Other\n6. Exit");
-                                menuOption = in.nextInt();
+                                menuOption = in.nextInt(); //asks which loan the user wants to add
                                 in.nextLine();
-                                recordID = inputRecID(in, usedRecords);
-                                usedRecords.add(recordID);
+                                recordID = inputRecID(in, usedRecords); //gets the record ID
+                                usedRecords.add(recordID);//adds the record ID to the set
                                 System.out.println("Enter the Amount left to pay (in thousands)");
-                                thouAmount = in.nextInt();
+                                thouAmount = in.nextInt();//gets the amount left to pay
                                 in.nextLine();
-                                if (thouAmount < 0) {
-                                    throw new IllegalArgumentException("Invalid Amount");
-                                }
 
-                                System.out.println("Enter the Interest");
-                                interest = in.nextDouble();
+                                interest = inputInterest(in); //gets the interest
 
-                                if (interest < 0 || interest > 100) {
-                                    throw new IllegalArgumentException("Invalid Interest");
-                                }
-                                System.out.println("Enter the duration in years. Must be between 0 and 30");
-                                duration = in.nextInt();
-                                if (duration < 0 || duration > 30) {
-                                    throw new IllegalArgumentException("Invalid Duration");
-                                }
+                                duration = inputDuration(in); //gets the duration
                                 break;
                             } catch (Exception e) {
-                                System.err.println(e.getMessage());
+                                System.err.println(e.getMessage());//if any input is wrong, it will throw an error
                             }
                             processLoan(in, menuOption, recordID, thouAmount, interest, duration, cust, totalRecords);
 
@@ -302,36 +288,35 @@ public class XYZBank {
                     }
                     break;
                 case 4:
-                    System.exit(0);
+                    System.exit(0);//exits the program
                     break;
             }
             break;
 
 
         }
-            printTable(totalRecords, amountOfRecords, customerArray);
-        }
+        printTable(totalRecords, amountOfRecords, customerArray);
+    }
 
-    public static void processLoan(Scanner in,int menuOption, String recordID, int thouAmount, double interest, int duration, Customer cust, int totalRecords) {
+    public static void processLoan(Scanner in, int menuOption, String recordID, int thouAmount, double interest, int duration, Customer cust, int totalRecords) {
         switch (menuOption) {
             case 1:
-                Personal personalLoan = new Personal(recordID, thouAmount, interest, duration);
-                cust.add(personalLoan);
+                Personal personalLoan = new Personal(recordID, thouAmount, interest, duration); //creates a new personal loan
+                cust.add(personalLoan);//adds the loan to the customer
                 break;
             case 2:
                 try {
-                    double overpay;
+                    double overpay;//the user inputs the overpay
                     do {
-                        System.out.println("Enter the Overpay");
+                        System.out.println("Enter the Overpay");//the user inputs the overpay
                         overpay = in.nextDouble();
 
                         if (overpay > 2 || overpay < 0) {
-                            throw new IllegalArgumentException("Invalid Overpay");
+                            throw new IllegalArgumentException("Invalid Overpay");//if the overpay is not between 0 and 2, it will throw an error
                         }
                     } while (!(overpay <= 2) && !(overpay >= 0));
 
-                    Builder buildLoan = new Builder(recordID, thouAmount, interest, duration, overpay);
-                    totalRecords++;
+                    Builder buildLoan = new Builder(recordID, thouAmount, interest, duration, overpay);//creates a new builder loan
                     cust.add(buildLoan);
 
                 } catch (Exception b) {
@@ -339,34 +324,35 @@ public class XYZBank {
                 }
                 break;
             case 3:
-                Auto autoLoan = new Auto(recordID, thouAmount, interest, duration);
+                Auto autoLoan = new Auto(recordID, thouAmount, interest, duration);//creates a new auto loan
                 cust.add(autoLoan);
                 break;
             case 4:
                 try {
-                    System.out.println("Enter the Overpay");
+                    System.out.println("Enter the Overpay");//the user inputs the overpay
                     double overpay = in.nextDouble();
                     if (overpay > 2 || overpay < 0) {
                         throw new IllegalArgumentException("Invalid Overpay");
                     }
-                    Mortgage mortLoan = new Mortgage(recordID, thouAmount, interest, duration, overpay);
-                    cust.add(mortLoan);
+                    Mortgage mortLoan = new Mortgage(recordID, thouAmount, interest, duration, overpay);//creates a new mortgage loan
+                    cust.add(mortLoan);//adds the loan to the customer
 
                 } catch (Exception a) {
                     System.err.println(a.getMessage());
                 }
                 break;
             case 5:
-                Other otherLoan = new Other(recordID, thouAmount, interest, duration);
+                Other otherLoan = new Other(recordID, thouAmount, interest, duration);//creates a new other loan
                 cust.add(otherLoan);
                 break;
             case 6:
                 break;
             default:
-                System.err.println("Invalid option, try again.");
+                System.err.println("Invalid option, try again.");//if the user inputs an invalid option, it will throw an error
                 break;
         }
     }
+
     private static String inputRecID(Scanner in, Set<String> usedRecords) {
         String recID;
         do {

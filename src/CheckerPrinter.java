@@ -1,14 +1,11 @@
-import java.util.ArrayList;
-
-
 public interface CheckerPrinter {
 
-     boolean eligible();
+    boolean eligible();
 
-     String toString();
+    String toString();
 
 
-     boolean eligible(double amount);
+    boolean eligible(double amount);
 
     void printTable();
 
