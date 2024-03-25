@@ -1,5 +1,6 @@
 public abstract class Loan {
 
+    // attributes
     protected String RecordID;
     protected String loanType;
     protected double interest;
@@ -8,13 +9,17 @@ public abstract class Loan {
     protected int duration;
 
 
+    // Constructor
     public Loan(String RecordID, int thouAmount, double interest, int duration) {
+        // sets attributes
         this.RecordID = RecordID;
         this.thouAmount = thouAmount;
         this.interest = interest;
         this.duration = duration;
     }
 
+
+    //default constructor
     public Loan() {
         this.RecordID = "000001";
         this.thouAmount = 4;
@@ -23,10 +28,12 @@ public abstract class Loan {
     }
 
     @Override
-    public String toString() {
+    public String toString() { // for printing the loan's details
         return String.format(" %-10s  %-10s  %-10f  %-10d  %-10d %n", getRecordID(), getLoanType(), getInterest(), getThouAmount(), getDuration());
     }
 
+
+    // getters and setters
     public double getInterest() {
         return interest;
     }

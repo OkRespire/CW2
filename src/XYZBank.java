@@ -33,7 +33,6 @@ public class XYZBank {
             System.exit(0); //if the input is not an integer, exit the program
         }
 
-
         //inputting customer details
         for (int i = 0; i < amount; i++) {
             try {
@@ -47,6 +46,10 @@ public class XYZBank {
                 System.out.println("Enter Customer Income");
                 double custIncome = in.nextDouble();
                 in.nextLine();
+
+                if(custIncome < 0) {
+                    throw new IllegalArgumentException("Invalid Customer Income");
+                }
                 Customer tempCust = new Customer(custID, custIncome);//creates a new customer and puts it in a temporary class
 
                 customerArray.add(tempCust); //adds the temporary class to the customer array
@@ -96,6 +99,8 @@ public class XYZBank {
                     totalRecords++;
                 } catch (Exception e) {
                     System.err.println(e.getMessage());
+                    usedRecords.remove(recordID); //removes the recordID from the set of used records
+                    totalRecords--;//decrements the total records
                     i--;
                 }
 
@@ -111,9 +116,10 @@ public class XYZBank {
 
 
         }
-        printTable(totalRecords, amountOfRecords, customerArray); //prints out the table
 
         while (true) {
+            flag = false;
+            printTable(totalRecords, amountOfRecords, customerArray); //prints out the table
 
             System.out.println("\nWhat would you like to do:\n1. Edit a field\n2. Delete a record\n3. Add a new record/customer\n4. Exit");//asks the user what they want to do
 
@@ -122,8 +128,11 @@ public class XYZBank {
             switch (menuOption) {
                 case 1: //if the user wants to edit a field, they type 1
                     while (true) {
+                        if(flag) break;
                         Customer tempCust = null; //creates a temporary customer
                         try {
+                            if(flag) break;
+
                             String custID;
                             System.out.println("Enter the CustomerID");//the user inputs the customerID
                             custID = in.nextLine();
@@ -134,6 +143,7 @@ public class XYZBank {
                             tempCust = customerIds.get(custID); //gets the customer from the customer ID
                             System.out.println("Enter the RecordID");
                             recordID = in.nextLine(); //input the record ID
+                            flag = true;
                             if (!usedRecords.contains(recordID)) {
                                 throw new IllegalArgumentException("Invalid RecordID");
                             }
@@ -152,12 +162,10 @@ public class XYZBank {
                                         in.nextLine();
                                         assert tempCust != null;
                                         tempCust.getLoan(recordID).setThouAmount(thouAmount); //sets the amount of thousands left to pay
+                                        break;
                                     } catch (Exception e) {
                                         System.err.println(e.getMessage());
-                                        continue;
                                     }
-
-                                    break;
                                 }
                                 break;
                             case 2://if the user wants to edit the interest, they type 2
@@ -167,12 +175,12 @@ public class XYZBank {
                                         in.nextLine();
                                         assert tempCust != null;
                                         tempCust.getLoan(recordID).setInterest(interest); //sets the interest
+                                        break;
 
                                     } catch (Exception e) {
                                         System.err.println(e.getMessage());
                                         continue;
                                     }
-                                    break;
                                 }
                                 break;
                             case 3://if the user wants to edit the duration, they type 3
@@ -200,12 +208,14 @@ public class XYZBank {
                     }
                 case 2://if the user wants to delete a record, they type 2
                     while (true) {
+                        if(flag) break;
                         System.out.println("Enter the CustomerID");
                         String custID = in.nextLine();
                         if (!custID.matches(regex) || !customerIds.containsKey(custID)) { //checks if the customer ID is in the correct format and if it is in the map
                             System.err.println("Invalid CustomerID"); //if not, it will throw an error
                             continue;
                         }
+                        flag = true;
 
                         Customer tempCust = customerIds.get(custID); //gets the customer from the customer ID
 
@@ -224,6 +234,7 @@ public class XYZBank {
                     break;
                 case 3:
                     while (true) {
+                        if(flag) break;
                         if (amountOfRecords == totalRecords) { //if the amount of records is equal to the total records...
                             System.out.println("Maximum number of records reached"); //...it will throw an error
                             break;
@@ -247,6 +258,7 @@ public class XYZBank {
                                 System.err.println("Invalid Income");
                                 continue;
                             }
+                            flag = true;
                             Customer newCust = new Customer(custID, custIncome);
                             customerIds.put(custID, newCust);//adds the new customer to the map
                             customerArray.add(newCust);//adds the new customer to the array
@@ -271,15 +283,21 @@ public class XYZBank {
                                 System.out.println("Enter the Amount left to pay (in thousands)");
                                 thouAmount = in.nextInt();//gets the amount left to pay
                                 in.nextLine();
-
+                                flag = true;
                                 interest = inputInterest(in); //gets the interest
-
                                 duration = inputDuration(in); //gets the duration
                                 break;
                             } catch (Exception e) {
                                 System.err.println(e.getMessage());//if any input is wrong, it will throw an error
                             }
-                            processLoan(in, menuOption, recordID, thouAmount, interest, duration, cust, totalRecords);
+                            try {
+                                processLoan(in, menuOption, recordID, thouAmount, interest, duration, cust, totalRecords);
+                                amountOfRecords++;//increases the amount of records by 1
+                            }catch (Exception e) {
+                                System.err.println(e.getMessage());
+                                amountOfRecords--;//decrements the amount of records by 1
+                                usedRecords.remove(recordID); //removes the record ID from the set so you can use it again
+                            }
                         }
                     }
                     break;
@@ -287,11 +305,7 @@ public class XYZBank {
                     System.exit(0);//exits the program
                     break;
             }
-            break;
-
-
         }
-        printTable(totalRecords, amountOfRecords, customerArray);
     }
 
     public static void processLoan(Scanner in, int menuOption, String recordID, int thouAmount, double interest, int duration, Customer cust, int totalRecords) {
@@ -433,8 +447,8 @@ public class XYZBank {
     }
 
     public static void printTable(int totalRecords, int amountOfRecords, ArrayList<Customer> customerArray) {
-        System.out.printf("Maximum number of records: %d\n", totalRecords); //prints out how many items can be inserted...
-        System.out.printf("Registered records: %d\n", amountOfRecords);//... and how many have been inserted
+        System.out.printf("Maximum number of records: %d\n", amountOfRecords); //prints out how many items can be inserted...
+        System.out.printf("Registered records: %d\n", totalRecords);//... and how many have been inserted
 
         System.out.println("--------------------------------"); //template from https://www.theserverside.com/blog/Coffee-Talk-Java-News-Stories-and-Opinions/Java-print-table-format-printf-chart-console-scanner-println-line
         System.out.println("Loan Management System");
